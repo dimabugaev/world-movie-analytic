@@ -1,0 +1,7 @@
+FROM prefecthq/prefect:2-python3.9
+RUN pip install prefect-gcp "prefect-gcp[cloud_storage]" opendatasets kaggle pandas pandas_gbq
+RUN mkdir /root/.kaggle
+COPY kaggle.json /root/.kaggle/kaggle.json
+RUN chmod 600 /root/.kaggle/kaggle.json
+COPY kaggle.json /home/.kaggle/kaggle.json
+RUN chmod 600 /home/.kaggle/kaggle.json
