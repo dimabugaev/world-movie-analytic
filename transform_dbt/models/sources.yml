@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: staging
+    database: world-movies-analytics
+    schema: world_movie_dataset
+
+    tables:
+      - name: movies
