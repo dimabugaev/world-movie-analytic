@@ -1,7 +1,16 @@
 FROM prefecthq/prefect:2-python3.9
 RUN pip install prefect-gcp "prefect-gcp[cloud_storage]" opendatasets kaggle pandas pandas_gbq
-RUN mkdir /root/.kaggle
-COPY kaggle.json /root/.kaggle/kaggle.json
-RUN chmod 600 /root/.kaggle/kaggle.json
+#RUN mkdir /root/.kaggle
+#COPY kaggle.json /root/.kaggle/kaggle.json
+#RUN chmod 600 /root/.kaggle/kaggle.json
+
+ARG P_KAGGLE_USERNAME
+ARG P_KAGGLE_KEY
+
+ENV KAGGLE_USERNAME=${P_KAGGLE_USERNAME}
+ENV KAGGLE_KEY=${P_KAGGLE_KEY}
+
+RUN echo "{\"username\":\"$KAGGLE_USERNAME\",\"key\":\"$KAGGLE_KEY\"}" > /home/.kaggle/kaggle.json
+
 COPY kaggle.json /home/.kaggle/kaggle.json
 RUN chmod 600 /home/.kaggle/kaggle.json

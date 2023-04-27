@@ -1,0 +1,30 @@
+FROM python:3.7.4-slim-stretch
+
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY config/profiles.dist.yml /root/.dbt/profiles.yml
+
+ARG P_GCP_KEYFILE
+ARG P_GCP_BQ_DATASET
+ARG P_GCP_REGION
+ARG P_GCP_PROJECT
+
+COPY ${P_GCP_KEYFILE} /root/.dbt/${P_GCP_PROJECT}.json
+ENV GCP_KEYFILE=/root/.dbt/${P_GCP_PROJECT}.json
+ENV GCP_BQ_DATASET=${P_GCP_BQ_DATASET}
+ENV GCP_REGION=${P_GCP_REGION}
+ENV GCP_PROJECT=${P_GCP_PROJECT}
+
+WORKDIR /dbt
+
+COPY dbt_project.yml /dbt/dbt_project.yml
+COPY packages.yml /dbt/packages.yml
+# COPY macros /dbt/macros
+COPY models /dbt/models
+COPY seeds /dbt/seeds
+# COPY tests /dbt/tests
+
+# install dbt deps
+RUN dbt deps

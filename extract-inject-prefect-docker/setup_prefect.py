@@ -47,10 +47,10 @@ gcs_bucket = GcsBucket(
 )
 gcs_bucket.save("world-movies-test-bucket", overwrite=True)
 
-bucket_name = "raw_movie_data_world-movies-analytics"
+# bucket_name = "raw_movie_data_world-movies-analytics"
 
-gcs_bucket = GcsBucket(
-    bucket=bucket_name,
-    gcp_credentials=gcp_credentials,
-)
-gcs_bucket.save("world-movies-raw-bucket", overwrite=True)
+# gcs_bucket = GcsBucket(
+#     bucket=bucket_name,
+#     gcp_credentials=gcp_credentials,
+# )
+# gcs_bucket.save("world-movies-raw-bucket", overwrite=True)

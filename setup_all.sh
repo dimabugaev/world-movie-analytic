@@ -2,6 +2,11 @@
 
 INSTALL
 
+IN KAGGLE (it's source kaggle.com)
+
+1. Create profile in Kaggle (if not exist)
+2. Create API token and download kaggle.json in profile settings 
+
 IN GCP 
 
 1. Create trial GCP account
@@ -25,6 +30,7 @@ IN PREFECT CLOUD
 
 1. Log in https://app.prefect.cloud
 2. Create API Key in profile settings and copy login command it will be showed just once
+3. Create Workspace any name
 
 prefect cloud login -k pnu_rVsf8cVuljZlESwl5atvingCwBh2ZY1bJI9i
 
@@ -40,7 +46,9 @@ LOCAL
     git clone https://github.com/dimabugaev/world-movie-analytic.git .
 3. Must be installed 
     a. python 3
-    c. terraform 
+    c. docker
+    d. terraform
+    e. prefect 
 4. Create and activate venv 
     python3 -m venv wma-env
     source wma-env/bin/activate
@@ -53,7 +61,26 @@ LOCAL
     export TF_VAR_state_backet_name=world-movie-terraform-state
     d. TF_VAR_region - region GCP
     export TF_VAR_region=europe-central2
+    e. KAGGLE_USERNAME - username from kaggle.json
+    export KAGGLE_USERNAME=bo0gie
+    f. KAGGLE_KEY - key from kaggle.json
+    export KAGGLE_KEY=8329bfc0498057617a58d400c42dda52
 
-6. Terraform init
+6. Connect prefect to prefect cloud through API KEY
+    prefect cloud login -k ${API_KEY}
+
+7. Add bloks GCP to prefect
+    prefect block register -m prefect_gcp
+
+8. Install local lib prefect-gcp
+    pip install prefect-gcp  
+
+9. Make kubernetes manifest
+    prefect kubernetes manifest agent -i prefecthq/prefect:2-python3.9 -q gcp > terraform/k8s.cfg
+
+10. Terraform init
+    cd terraform
     terraform init -backend-config "bucket=$TF_VAR_state_backet_name"
-    
+
+
+prefect block register -m prefect_gcp
