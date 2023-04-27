@@ -25,8 +25,7 @@ terraform {
 data "terraform_remote_state" "state" {
   backend = "gcs"
   config {
-    #bucket     = "${var.tf_state_bucket}"
-    bucket     = var.state_backet_name
+    bucket     = "${var.state_backet_name}"
   }
 }
 
