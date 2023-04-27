@@ -16,6 +16,15 @@
 
 import os
 from prefect_gcp import GcpCredentials, CloudRunJob, GcsBucket
+import json
+
+with open(os.environ['GOOGLE_APPLICATION_CREDENTIALS']) as json_cred:
+     service_account_info = json.load(json_cred)    
+
+     if len(service_account_info) > 0:
+         GcpCredentials(
+         service_account_info=service_account_info
+         ).save("world-movies-analytics-cred", overwrite=True)
 
 gcp_credentials = GcpCredentials.load("world-movies-analytics-cred")
 

@@ -100,7 +100,7 @@ resource "null_resource" "docker_build" {
     }
 }
 
-/* 
+ 
 module "gke" {
   source     = "terraform-google-modules/kubernetes-engine/google"
   project_id = local.project
@@ -120,4 +120,3 @@ module "gke" {
   #create_service_account = false
   #service_account        = var.compute_engine_service_account
 }
-*/
