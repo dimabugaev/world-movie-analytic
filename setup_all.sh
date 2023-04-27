@@ -52,4 +52,8 @@ LOCAL
     c. TF_VAR_state_backet_name - bucket name for Terraform states
     export TF_VAR_state_backet_name=world-movie-terraform-state
     d. TF_VAR_region - region GCP
-    export TF_VAR_state_backet_name=europe-central2
+    export TF_VAR_region=europe-central2
+
+6. Terraform init
+    terraform init -backend-config "bucket=$TF_VAR_state_backet_name"
+    

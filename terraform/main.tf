@@ -22,12 +22,6 @@ terraform {
   }
 }
 
-data "terraform_remote_state" "state" {
-  backend = "gcs"
-  config {
-    bucket     = "${var.state_backet_name}"
-  }
-}
 
 locals {
   project = var.project_name
