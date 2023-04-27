@@ -14,14 +14,19 @@ variable "state_backet_name" {
 
 terraform {
   required_version = ">= 1.0"
-  backend "gcs" {
-    bucket  = var.state_backet_name
-    #prefix  = "terraform/state"  
-  }  
+  backend "gcs" {}  
   required_providers {
     google = {
       source  = "hashicorp/google"
     }
+  }
+}
+
+data "terraform_remote_state" "state" {
+  backend = "gcs"
+  config {
+    #bucket     = "${var.tf_state_bucket}"
+    bucket     = var.state_backet_name
   }
 }
 
