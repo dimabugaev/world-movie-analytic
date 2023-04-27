@@ -1,8 +1,22 @@
+
+variable "region" {
+  type = string
+  default = "europe-central2"
+}
+
+variable "project_name" {
+  type = string  
+}
+
+variable "state_backet_name" {
+  type = string  
+}
+
 terraform {
   required_version = ">= 1.0"
   backend "gcs" {
-    bucket  = "tf-state-world-movies"
-    prefix  = "terraform/state"  
+    bucket  = var.state_backet_name
+    #prefix  = "terraform/state"  
   }  
   required_providers {
     google = {
@@ -12,9 +26,9 @@ terraform {
 }
 
 locals {
-  project = "world-movies-analytics"
-  region = "europe-central2"
-  bq_dataset_name = "world_movie_dataset"
+  project = var.project_name
+  region = var.region
+  bq_dataset_name = "${var.project_name}_dataset"
   docker_image = "prefect-gcp:2-python3.9"
   gcr_addres = "eu.gcr.io"
 }
