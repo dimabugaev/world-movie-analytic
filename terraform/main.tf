@@ -159,7 +159,7 @@ provider "kubernetes" {
 
 resource "kubernetes_manifest" "my_config" {
   provider = kubernetes
-  manifest = file("k8s.cfg")
+  manifest = file("./k8s.cfg")
 }
 
 output "image_python_prefect" {
