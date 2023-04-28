@@ -43,32 +43,32 @@ provider "google" {
   // credentials = file(var.credentials)  # Use this if you do not want to set env-var GOOGLE_APPLICATION_CREDENTIALS
 }
 
-resource "google_storage_bucket" "raw-movie-data" {
-  name          = "raw_movie_data_${local.project}" # Concatenating DL bucket & Project name for unique naming
-  location      = local.region
+# resource "google_storage_bucket" "raw-movie-data" {
+#   name          = "raw-movie-data_${local.project}" # Concatenating DL bucket & Project name for unique naming
+#   location      = local.region
 
-  # Optional, but recommended settings:
-  storage_class = "STANDARD"
-  uniform_bucket_level_access = true
+#   # Optional, but recommended settings:
+#   storage_class = "STANDARD"
+#   uniform_bucket_level_access = true
 
-  versioning {
-    enabled     = false
-  }
+#   versioning {
+#     enabled     = false
+#   }
 
-  lifecycle_rule {
-    action {
-      type = "Delete"
-    }
-    condition {
-      age = 30  // days
-    }
-  }
+#   lifecycle_rule {
+#     action {
+#       type = "Delete"
+#     }
+#     condition {
+#       age = 30  // days
+#     }
+#   }
 
-  force_destroy = true
-}
+#   force_destroy = true
+# }
 
 resource "google_storage_bucket" "cloud-run-job-data" {
-  name          = "cloud-run-job-test-bucket" # Concatenating DL bucket & Project name for unique naming
+  name          = "cloud-run-job-bucket-${local.project}" # Concatenating DL bucket & Project name for unique naming
   location      = local.region
 
   # Optional, but recommended settings:
@@ -185,4 +185,8 @@ output "image_python_prefect" {
 
 output "image_python_dbt" {
   value = "${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/dbt"
+}
+
+output "cloud_run_job_bucket" {
+  value = google_storage_bucket.cloud-run-job-data.name
 }
