@@ -6,12 +6,11 @@ RUN pip install -r requirements.txt
 
 COPY config/profiles.dist.yml /root/.dbt/profiles.yml
 
-ARG P_GCP_KEYFILE
 ARG P_GCP_BQ_DATASET
 ARG P_GCP_REGION
 ARG P_GCP_PROJECT
 
-COPY ${P_GCP_KEYFILE} /root/.dbt/${P_GCP_PROJECT}.json
+COPY config/gcpkeyfile.json /root/.dbt/${P_GCP_PROJECT}.json
 ENV GCP_KEYFILE=/root/.dbt/${P_GCP_PROJECT}.json
 ENV GCP_BQ_DATASET=${P_GCP_BQ_DATASET}
 ENV GCP_REGION=${P_GCP_REGION}
