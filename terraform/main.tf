@@ -158,7 +158,7 @@ provider "kubernetes" {
 }
 
 resource "kubernetes_manifest" "my_config" {
-  yaml_body = file("k8s.cfg")
+  manifest = file("k8s.cfg")
 }
 
 output "image_python_prefect" {
