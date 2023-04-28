@@ -34,6 +34,7 @@ locals {
   bq_dataset_name = "${var.project_name}_dataset"
   docker_image = "prefect-gcp:2-python3.9"
   gcr_addres = "eu.gcr.io"
+  k8s_file = file("./k8s.cfg")
 }
 
 provider "google" {
@@ -159,7 +160,20 @@ provider "kubernetes" {
 
 resource "kubernetes_manifest" "my_config" {
   provider = kubernetes
-  manifest = file("./k8s.cfg")
+
+  for_each = {
+    for value in [
+      for yaml in split(
+        "\n---\n",
+        "\n${replace(local.k8s_file, "/(?m)^---[[:blank:]]*(#.*)?$/", "---")}\n"
+      ) :
+      yamldecode(yaml)
+      if trimspace(replace(yaml, "/(?m)(^[[:blank:]]*(#.*)?$)+/", "")) != ""
+    ] : "${value["kind"]}--${value["metadata"]["name"]}" => value
+  }
+  manifest = each.value
+
+  #manifest = file("./k8s.cfg")
 }
 
 output "image_python_prefect" {
