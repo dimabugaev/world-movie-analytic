@@ -147,34 +147,34 @@ resource "google_container_cluster" "primary" {
 }
 
 
-provider "kubernetes" {
+# provider "kubernetes" {
   
-  host = google_container_cluster.primary.endpoint
+#   host = google_container_cluster.primary.endpoint
   
-  #cluster_ca_certificate = base64decode(data.google_container_cluster.default.master_auth.0.cluster_ca_certificate)
-  #client_certificate     = base64decode(data.google_container_cluster.default.master_auth.0.client_certificate)
-  #client_key             = data.google_container_cluster.default.master_auth.0.client_key
+#   #cluster_ca_certificate = base64decode(data.google_container_cluster.default.master_auth.0.cluster_ca_certificate)
+#   #client_certificate     = base64decode(data.google_container_cluster.default.master_auth.0.client_certificate)
+#   #client_key             = data.google_container_cluster.default.master_auth.0.client_key
   
-  #load_config_file       = false
-}
+#   #load_config_file       = false
+# }
 
-resource "kubernetes_manifest" "my_config" {
-  provider = kubernetes
+# resource "kubernetes_manifest" "my_config" {
+#   provider = kubernetes
 
-  for_each = {
-    for value in [
-      for yaml in split(
-        "\n---\n",
-        "\n${replace(local.k8s_file, "/(?m)^---[[:blank:]]*(#.*)?$/", "---")}\n"
-      ) :
-      yamldecode(yaml)
-      if trimspace(replace(yaml, "/(?m)(^[[:blank:]]*(#.*)?$)+/", "")) != ""
-    ] : "${value["kind"]}--${value["metadata"]["name"]}" => value
-  }
-  manifest = each.value
+#   for_each = {
+#     for value in [
+#       for yaml in split(
+#         "\n---\n",
+#         "\n${replace(local.k8s_file, "/(?m)^---[[:blank:]]*(#.*)?$/", "---")}\n"
+#       ) :
+#       yamldecode(yaml)
+#       if trimspace(replace(yaml, "/(?m)(^[[:blank:]]*(#.*)?$)+/", "")) != ""
+#     ] : "${value["kind"]}--${value["metadata"]["name"]}" => value
+#   }
+#   manifest = each.value
 
-  #manifest = file("./k8s.cfg")
-}
+#   #manifest = file("./k8s.cfg")
+# }
 
 output "image_python_prefect" {
   value = "${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image}"
