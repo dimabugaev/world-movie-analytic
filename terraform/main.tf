@@ -159,7 +159,10 @@ provider "kubernetes" {
 
 resource "kubernetes_manifest" "my_config" {
   provider = kubernetes
-  manifest_file = file("k8s.cfg")
+  manifest = yamldecode(<<YAML
+    "${file("k8s.cfg")}"
+    YAML
+    )
 }
 
 output "image_python_prefect" {
