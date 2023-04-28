@@ -126,27 +126,19 @@ resource "null_resource" "docker_dbt_build" {
     }
 }
 
+
+resource "google_container_cluster" "primary" {
+  name     = "${local.project}-gke"
+  location = local.region
  
-module "gke" {
-  source     = "terraform-google-modules/kubernetes-engine/google"
-  project_id = local.project
-  name       = "prefect-agent-cluster"
-  regional   = true
-  region     = local.region
-  release_channel        = "REGULAR"
-  horizontal_pod_autoscaling = true
-
-  network    = "default"
-  subnetwork = "default"
-  #network    = var.network
-  #subnetwork = var.subnetwork
-
-  ip_range_pods          = "ip-range-pods-simple-autopilot-public"
-  ip_range_services      = "ip-range-svc-simple-autopilot-public"
-  #create_service_account = false
-  #service_account        = var.compute_engine_service_account
+  project = local.project
+  
+  network    = google_compute_network.vpc.name
+  subnetwork = google_compute_subnetwork.subnet.name
+ 
+# Enabling Autopilot for this cluster
+  enable_autopilot = true
 }
-
 
 output "image_python_prefect" {
   value = "${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image}"

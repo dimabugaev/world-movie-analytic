@@ -46,6 +46,7 @@ LOCAL
     git clone https://github.com/dimabugaev/world-movie-analytic.git .
 3. Must be installed 
     a. python 3
+    b. gcloud
     c. docker
     d. terraform
     e. prefect 
