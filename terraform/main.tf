@@ -140,11 +140,12 @@ resource "google_container_cluster" "primary" {
   enable_autopilot = true
 }
 
-provider "kubectl" {
+provider "kubernetes" {
   
   host                   = resource.google_container_cluster.endpoint
-  cluster_ca_certificate = resource.google_container_cluster.master_auth.0.cluster_ca_certificate
-  token                  = resource.google_container_cluster.master_auth.0.client_key
+  cluster_ca_certificate = base64decode(resource.google_container_cluster.master_auth.0.cluster_ca_certificate)
+  client_certificate     = base64decode(resource.google_container_cluster.master_auth.0.client_certificate)
+  client_key             = resource.google_container_cluster.master_auth.0.client_key
   load_config_file       = false
 }
 
