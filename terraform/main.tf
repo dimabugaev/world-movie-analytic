@@ -140,6 +140,18 @@ resource "google_container_cluster" "primary" {
   enable_autopilot = true
 }
 
+provider "kubectl" {
+  
+  host                   = resource.google_container_cluster.endpoint
+  cluster_ca_certificate = resource.google_container_cluster.master_auth.0.cluster_ca_certificate
+  token                  = resource.google_container_cluster.master_auth.0.client_key
+  load_config_file       = false
+}
+
+resource "kubernetes_manifest" "my_config" {
+  yaml_body = file("k8s.cfg")
+}
+
 output "image_python_prefect" {
   value = "${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image}"
 }
