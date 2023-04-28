@@ -16,8 +16,13 @@ terraform {
   required_version = ">= 1.0"
   backend "gcs" {}  
   required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = ">= 2.0.3"
+    }
     google = {
       source  = "hashicorp/google"
+      version = "3.52"
     }
   }
 }
@@ -140,17 +145,19 @@ resource "google_container_cluster" "primary" {
   enable_autopilot = true
 }
 
+data "google_container_cluster" "default" {
+  name       = google_container_cluster.primary.name
+  depends_on = [google_container_cluster.primary]
+}
+
 provider "kubernetes" {
   
   host                   = google_container_cluster.primary.endpoint
   
-  #client_key = google_container_cluster.primary.
-  #cluster_ca_certificate = base64decode(google_container_cluster.primary.master_auth.0.cluster_ca_certificate)
-  #client_certificate     = base64decode(google_container_cluster.primary.master_auth.0.client_certificate)
-  #client_key             = google_container_cluster.primary.master_auth.0.primary.master_auth
+  cluster_ca_certificate = base64decode(data.google_container_cluster.default.master_auth.0.cluster_ca_certificate)
+  client_certificate     = base64decode(data.google_container_cluster.default.master_auth.0.client_certificate)
+  client_key             = data.google_container_cluster.default.master_auth.0.client_key
   
-  
-
   load_config_file       = false
 }
 
