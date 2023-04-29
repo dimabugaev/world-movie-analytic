@@ -158,10 +158,22 @@ module "gke_auth" {
   use_private_endpoint = true
 }
 
-provider "kubernetes" {
-  cluster_ca_certificate = module.gke_auth.cluster_ca_certificate
+# provider "kubernetes" {
+#   cluster_ca_certificate = module.gke_auth.cluster_ca_certificate
+#   host                   = module.gke_auth.host
+#   token                  = module.gke_auth.token
+# }
+
+provider "kubectl" {
   host                   = module.gke_auth.host
+  cluster_ca_certificate = module.gke_auth.cluster_ca_certificate
   token                  = module.gke_auth.token
+  load_config_file       = false
+}
+
+resource "kubectl_manifest" "test" {
+    yaml_body = file("./k8s.cfg")
+
 }
 
 # provider "kubernetes" {
@@ -175,21 +187,21 @@ provider "kubernetes" {
 #   #load_config_file       = false
 # }
 
-resource "kubernetes_manifest" "my_config" {
-  provider = kubernetes
-  #  for_each = {
-  #    for value in [
-  #      for yaml in split(
-  #        "\n---\n",
-  #        "\n${replace(local.k8s_file, "/(?m)^---[[:blank:]]*(#.*)?$/", "---")}\n"
-  #      ) :
-  #      yamldecode(yaml)
-  #      if trimspace(replace(yaml, "/(?m)(^[[:blank:]]*(#.*)?$)+/", "")) != ""
-  #    ] : "${value["kind"]}--${value["metadata"]["name"]}" => value
-  #  }
-  #  manifest = each.value
-  manifest = file("./k8s.cfg")
-}
+# resource "kubernetes_manifest" "my_config" {
+#   provider = kubernetes
+#   #  for_each = {
+#   #    for value in [
+#   #      for yaml in split(
+#   #        "\n---\n",
+#   #        "\n${replace(local.k8s_file, "/(?m)^---[[:blank:]]*(#.*)?$/", "---")}\n"
+#   #      ) :
+#   #      yamldecode(yaml)
+#   #      if trimspace(replace(yaml, "/(?m)(^[[:blank:]]*(#.*)?$)+/", "")) != ""
+#   #    ] : "${value["kind"]}--${value["metadata"]["name"]}" => value
+#   #  }
+#   #  manifest = each.value
+#   manifest = file("./k8s.cfg")
+# }
 
 output "image_python_prefect" {
   value = "${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image}"
