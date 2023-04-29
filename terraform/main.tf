@@ -149,6 +149,20 @@ resource "google_container_cluster" "primary" {
   enable_autopilot = true
 }
 
+module "gke_auth" {
+  source               = "terraform-google-modules/kubernetes-engine/google//modules/auth"
+
+  project_id           = local.project
+  cluster_name         = google_container_cluster.primary.name
+  location             = local.region
+  use_private_endpoint = true
+}
+
+provider "kubernetes" {
+  cluster_ca_certificate = module.gke_auth.cluster_ca_certificate
+  host                   = module.gke_auth.host
+  token                  = module.gke_auth.token
+}
 
 # provider "kubernetes" {
   
@@ -161,23 +175,21 @@ resource "google_container_cluster" "primary" {
 #   #load_config_file       = false
 # }
 
-# resource "kubernetes_manifest" "my_config" {
-#   provider = kubernetes
-
-#   for_each = {
-#     for value in [
-#       for yaml in split(
-#         "\n---\n",
-#         "\n${replace(local.k8s_file, "/(?m)^---[[:blank:]]*(#.*)?$/", "---")}\n"
-#       ) :
-#       yamldecode(yaml)
-#       if trimspace(replace(yaml, "/(?m)(^[[:blank:]]*(#.*)?$)+/", "")) != ""
-#     ] : "${value["kind"]}--${value["metadata"]["name"]}" => value
-#   }
-#   manifest = each.value
-
-#   #manifest = file("./k8s.cfg")
-# }
+resource "kubernetes_manifest" "my_config" {
+   provider = kubernetes
+   for_each = {
+     for value in [
+       for yaml in split(
+         "\n---\n",
+         "\n${replace(local.k8s_file, "/(?m)^---[[:blank:]]*(#.*)?$/", "---")}\n"
+       ) :
+       yamldecode(yaml)
+       if trimspace(replace(yaml, "/(?m)(^[[:blank:]]*(#.*)?$)+/", "")) != ""
+     ] : "${value["kind"]}--${value["metadata"]["name"]}" => value
+   }
+   manifest = each.value
+   #manifest = file("./k8s.cfg")
+}
 
 output "image_python_prefect" {
   value = "${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image}"
@@ -189,4 +201,8 @@ output "image_python_dbt" {
 
 output "cloud_run_job_bucket" {
   value = google_storage_bucket.cloud-run-job-data.name
+}
+
+output "cluster_name" {
+  value = google_container_cluster.primary.name
 }
