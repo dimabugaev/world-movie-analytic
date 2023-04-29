@@ -159,7 +159,7 @@ module "gke_auth" {
   project_id           = local.project
   cluster_name         = google_container_cluster.primary.name
   location             = local.region
-  use_private_endpoint = true
+  //use_private_endpoint = true
 }
 
 # provider "kubernetes" {
@@ -170,7 +170,7 @@ module "gke_auth" {
 
 provider "kubectl" {
   host                   = module.gke_auth.host
-  cluster_ca_certificate = base64decode(module.gke_auth.cluster_ca_certificate)
+  cluster_ca_certificate = module.gke_auth.cluster_ca_certificate
   token                  = module.gke_auth.token
   load_config_file       = false
 }
