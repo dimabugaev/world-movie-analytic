@@ -175,11 +175,13 @@ resource "kubectl_manifest" "test" {
 
 #Some output data to use for Prefect init
 output "image_python_prefect" {
-  value = "${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image}"
+  #value = "${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image}"
+  value = "${local.gcr_addres}/${local.project}/${local.docker_image}"
 }
 
 output "image_python_dbt" {
-  value = "${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/dbt"
+  #value = "${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/dbt"
+  value = "${local.gcr_addres}/${local.project}/dbt"
 }
 
 output "cloud_run_job_bucket" {
