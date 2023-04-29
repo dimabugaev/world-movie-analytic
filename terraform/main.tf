@@ -31,7 +31,7 @@ terraform {
 locals {
   project = var.project_name
   region = var.region
-  bq_dataset_name = "${var.project_name}_dataset"
+  bq_dataset_name = "world_movie_dataset"
   docker_image = "prefect-gcp:2-python3.9"
   gcr_addres = "eu.gcr.io"
   k8s_file = file("./k8s.cfg")
@@ -114,7 +114,7 @@ resource "null_resource" "docker_build" {
     provisioner "local-exec" {
         working_dir = "../extract-inject-prefect-docker/"
 
-        command     = "echo \"{\"username\":\"$KAGGLE_USERNAME\",\"key\":\"$KAGGLE_KEY\"}\" > config/kaggle.json && docker build -t ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image} --build-arg P_KAGGLE_USERNAME=$KAGGLE_USERNAME --build-arg P_KAGGLE_KEY=$KAGGLE_KEY . && docker login -u _json_key --password-stdin https://${local.gcr_addres} < $GOOGLE_APPLICATION_CREDENTIALS && docker push ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image}"
+        command     = "echo \"{\"username\":\"$KAGGLE_USERNAME\",\"key\":\"$KAGGLE_KEY\"}\" > kaggle.json && docker build -t ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image} --build-arg P_KAGGLE_USERNAME=$KAGGLE_USERNAME --build-arg P_KAGGLE_KEY=$KAGGLE_KEY . && docker login -u _json_key --password-stdin https://${local.gcr_addres} < $GOOGLE_APPLICATION_CREDENTIALS && docker push ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image}"
     }
 }
 
