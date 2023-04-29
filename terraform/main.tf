@@ -99,7 +99,16 @@ resource "null_resource" "docker_build" {
     provisioner "local-exec" {
         working_dir = "../extract-inject-prefect-docker/"
 
-        command     = "echo \"{\"username\":\"$KAGGLE_USERNAME\",\"key\":\"$KAGGLE_KEY\"}\" > kaggle.json && docker build -t ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image} --build-arg P_KAGGLE_USERNAME=$KAGGLE_USERNAME --build-arg P_KAGGLE_KEY=$KAGGLE_KEY . && docker login -u _json_key --password-stdin https://${local.gcr_addres} < $GOOGLE_APPLICATION_CREDENTIALS && docker push ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image}"
+        command     = "echo \"{\"username\":\"$KAGGLE_USERNAME\",\"key\":\"$KAGGLE_KEY\"}\" > kaggle.json && docker build -t ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image} . && docker login -u _json_key --password-stdin https://${local.gcr_addres} < $GOOGLE_APPLICATION_CREDENTIALS && docker push ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image}"
+    }
+}
+
+resource "null_resource" "delay_after_agent_image_build" {
+    provisioner "local-exec" {
+        command = "sleep 20"
+    }
+    triggers = {
+        "before" = null_resource.docker_build.id
     }
 }
 
@@ -117,6 +126,7 @@ resource "null_resource" "docker_dbt_build" {
         command     = "cp $GOOGLE_APPLICATION_CREDENTIALS config/gcpkeyfile.json && docker build -t ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/dbt --build-arg P_GCP_BQ_DATASET=${local.bq_dataset_name} --build-arg P_GCP_REGION=${local.region} --build-arg P_GCP_PROJECT=${local.project} . && docker login -u _json_key --password-stdin https://${local.gcr_addres} < $GOOGLE_APPLICATION_CREDENTIALS && docker push ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/dbt && rm -rf config/gcpkeyfile.json"
     }
 }
+
 
 #Create Google kubernetes engine
 resource "google_container_cluster" "primary" {
@@ -155,6 +165,8 @@ provider "kubectl" {
 #Apply prefect agent manifest
 resource "kubectl_manifest" "test" {
     yaml_body = file("./k8s.cfg")
+
+    depends_on = ["null_resource.delay_after_agent_image_build"]
 }
 
 
