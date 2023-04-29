@@ -24,7 +24,8 @@ IN GCP
     b. Artifact Registry API
     c. BigQuery API
     d. Cloud Run API
-    e. Cloud Storage 
+    e. Cloud Storage
+    f. Service Account User 
 
 IN PREFECT CLOUD
 
@@ -77,11 +78,13 @@ LOCAL
     pip install prefect-gcp  
 
 9. Make kubernetes manifest
-    prefect kubernetes manifest agent -i prefecthq/prefect:2-python3.9 -q gcp > terraform/k8s.cfg
+    prefect kubernetes manifest agent -i prefecthq/prefect:2-python3.9 -q default > terraform/k8s.cfg
 
-10. Terraform init
+10. gcloud init
+
+11. Terraform init and apply
     cd terraform
     terraform init -backend-config "bucket=$TF_VAR_state_backet_name"
+    terraform apply
 
 
-prefect block register -m prefect_gcp

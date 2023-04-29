@@ -15,7 +15,7 @@ deployment = Deployment.build_from_flow(
     name="GCP test flow",
     storage=gcs_block,
     infrastructure=cloud_run_job_block,
-    work_queue_name="kubernetes",
+    #work_queue_name="kubernetes",
 )
 
 if __name__ == "__main__":
