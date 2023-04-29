@@ -175,10 +175,10 @@ provider "kubectl" {
   load_config_file       = false
 }
 
-resource "kubectl_manifest" "test" {
-    yaml_body = file("./k8s.cfg")
+# resource "kubectl_manifest" "test" {
+#     yaml_body = file("./k8s.cfg")
 
-}
+# }
 
 # provider "kubernetes" {
   
@@ -221,4 +221,16 @@ output "cloud_run_job_bucket" {
 
 output "cluster_name" {
   value = google_container_cluster.primary.name
+}
+
+output "gke_host" {
+  value = module.gke_auth.host  
+}
+
+output "ca_cert" {
+  value = module.gke_auth.cluster_ca_certificate  
+}
+
+output "ca_token" {
+  value = module.gke_auth.token  
 }
