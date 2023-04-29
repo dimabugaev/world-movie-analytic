@@ -108,33 +108,33 @@ resource "google_artifact_registry_repository" "my-repo" {
   format        = "DOCKER"
 }
 
-resource "null_resource" "docker_build" {
+# resource "null_resource" "docker_build" {
 
-    triggers = {
-        always_run = timestamp()
+#     triggers = {
+#         always_run = timestamp()
 
-    }
+#     }
 
-    provisioner "local-exec" {
-        working_dir = "../extract-inject-prefect-docker/"
+#     provisioner "local-exec" {
+#         working_dir = "../extract-inject-prefect-docker/"
 
-        command     = "echo \"{\"username\":\"$KAGGLE_USERNAME\",\"key\":\"$KAGGLE_KEY\"}\" > kaggle.json && docker build -t ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image} --build-arg P_KAGGLE_USERNAME=$KAGGLE_USERNAME --build-arg P_KAGGLE_KEY=$KAGGLE_KEY . && docker login -u _json_key --password-stdin https://${local.gcr_addres} < $GOOGLE_APPLICATION_CREDENTIALS && docker push ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image}"
-    }
-}
+#         command     = "echo \"{\"username\":\"$KAGGLE_USERNAME\",\"key\":\"$KAGGLE_KEY\"}\" > kaggle.json && docker build -t ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image} --build-arg P_KAGGLE_USERNAME=$KAGGLE_USERNAME --build-arg P_KAGGLE_KEY=$KAGGLE_KEY . && docker login -u _json_key --password-stdin https://${local.gcr_addres} < $GOOGLE_APPLICATION_CREDENTIALS && docker push ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image}"
+#     }
+# }
 
-resource "null_resource" "docker_dbt_build" {
+# resource "null_resource" "docker_dbt_build" {
 
-    triggers = {
-        always_run = timestamp()
+#     triggers = {
+#         always_run = timestamp()
 
-    }
+#     }
 
-    provisioner "local-exec" {
-        working_dir = "../transform_dbt/"
+#     provisioner "local-exec" {
+#         working_dir = "../transform_dbt/"
 
-        command     = "cp $GOOGLE_APPLICATION_CREDENTIALS config/gcpkeyfile.json && docker build -t ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/dbt --build-arg P_GCP_BQ_DATASET=${local.bq_dataset_name} --build-arg P_GCP_REGION=${local.region} --build-arg P_GCP_PROJECT=${local.project} . && docker login -u _json_key --password-stdin https://${local.gcr_addres} < $GOOGLE_APPLICATION_CREDENTIALS && docker push ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/dbt && rm -rf config/gcpkeyfile.json"
-    }
-}
+#         command     = "cp $GOOGLE_APPLICATION_CREDENTIALS config/gcpkeyfile.json && docker build -t ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/dbt --build-arg P_GCP_BQ_DATASET=${local.bq_dataset_name} --build-arg P_GCP_REGION=${local.region} --build-arg P_GCP_PROJECT=${local.project} . && docker login -u _json_key --password-stdin https://${local.gcr_addres} < $GOOGLE_APPLICATION_CREDENTIALS && docker push ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/dbt && rm -rf config/gcpkeyfile.json"
+#     }
+# }
 
 
 resource "google_container_cluster" "primary" {
