@@ -103,14 +103,14 @@ resource "null_resource" "docker_build" {
     }
 }
 
-resource "null_resource" "delay_after_agent_image_build" {
-    provisioner "local-exec" {
-        command = "sleep 20"
-    }
-    triggers = {
-        "before" = null_resource.docker_build.id
-    }
-}
+# resource "null_resource" "delay" {
+#     provisioner "local-exec" {
+#         command = "sleep 60"
+#     }
+#     triggers = {
+#         "before" = null_resource.docker_build.id
+#     }
+# }
 
 #Build and push to gcloud repo docker image for DBT run flow
 resource "null_resource" "docker_dbt_build" {
@@ -153,6 +153,7 @@ module "gke_auth" {
   cluster_name         = google_container_cluster.primary.name
   location             = local.region
   //use_private_endpoint = true
+  depends_on = [google_container_cluster.primary]
 }
 
 provider "kubectl" {
@@ -166,7 +167,7 @@ provider "kubectl" {
 resource "kubectl_manifest" "test" {
     yaml_body = file("./k8s.cfg")
 
-    depends_on = ["null_resource.delay_after_agent_image_build"]
+    depends_on = [null_resource.docker_build]
 }
 
 
