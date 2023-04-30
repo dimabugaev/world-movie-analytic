@@ -5,10 +5,10 @@ import subprocess
 from zipfile import ZipFile
 import pandas as pd
 from prefect_gcp import GcpCredentials
+from prefect.deployments import run_deployment
 
 @task(log_prints=True)
 def download_dataset():
-    #od.download("https://www.kaggle.com/akshaypawar7/millions-of-movies")
     print(subprocess.getoutput("kaggle datasets download -d akshaypawar7/millions-of-movies"))
 
 @task(log_prints=True)    
@@ -28,19 +28,18 @@ def unzip_and_put_to_bq():
     #gcp_cloud_storage_bucket_block = GcsBucket.load("world-movies-raw-bucket")
     #gcp_cloud_storage_bucket_block.upload_from_path(from_path="movies.csv", to_path="movies.csv")
 
+@task(log_prints=True)
+def run_transform_dbt():
+    response = run_deployment(name="cloud_run_dbt_flow/DbtFlow")
+    print(response)
 
 @flow(log_prints=True)
-def cloud_run_job_flow():
-    
-    #print(subprocess.getoutput("ls"))
-    #print(subprocess.check_output("cd .kaggle", shell=True))
-    #os.system('cd .kaggle')
-    #print(subprocess.getoutput("ls"))
-    #print(subprocess.getoutput("kaggle --help"))
+def cloud_run_main_flow():
     
     download_dataset()
     unzip_and_put_to_bq()
+    run_transform_dbt()
 
 
 if __name__ == "__main__":
-    cloud_run_job_flow()
+    cloud_run_main_flow()

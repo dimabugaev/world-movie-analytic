@@ -77,7 +77,7 @@ LOCAL
 8. Install local lib prefect-gcp
     pip install prefect-gcp  
 
-9. Make kubernetes manifest
+9. Make kubernetes manifest for prefect agent
     prefect kubernetes manifest agent -i prefecthq/prefect:2-python3.9 -q default > terraform/k8s.cfg
 
 10. gcloud init
@@ -86,5 +86,9 @@ LOCAL
     cd terraform
     terraform init -backend-config "bucket=$TF_VAR_state_backet_name"
     terraform apply
+
+12. Setup prefect blocks for deploymen
+    cd ../extract-inject-prefect-docker/
+    python3 setup_prefect.py
 
 
