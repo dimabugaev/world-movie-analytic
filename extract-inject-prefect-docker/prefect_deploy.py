@@ -2,6 +2,7 @@ from cloud_run_main_script import cloud_run_main_flow
 from cloud_run_dbt_script import cloud_run_dbt_flow
 from prefect import get_client
 from prefect.deployments import Deployment
+from prefect.server.schemas.schedules import CronSchedule
 
 from prefect_gcp import CloudRunJob, GcsBucket
 
@@ -26,6 +27,7 @@ deployment_main = Deployment.build_from_flow(
     name="MainFlow",
     storage=gcs_block,
     infrastructure=cloud_run_main_block,
+    schedule=CronSchedule(cron="0 0 * * *"),
     #work_queue_name="kubernetes",
 )
 
