@@ -16,7 +16,8 @@ gcp_credentials = GcpCredentials.load("world-movies-analytics-cred")
 
 # must be from GCR and have Python + Prefect
 image_main = os.environ['IMAGE_MAIN']  
-image_dbt = os.environ['IMAGE_DBT'] 
+image_dbt = os.environ['IMAGE_DBT']
+job_bucket_name = os.environ['JOB_BUCKET_NAME'] 
 region = os.environ['TF_VAR_region']
 
 cloud_run_main = CloudRunJob(
@@ -37,12 +38,11 @@ cloud_run_dbt = CloudRunJob(
 )
 cloud_run_dbt.save("world-movies-dbt-job", overwrite=True)
 
-bucket_name = "cloud-run-job-test-bucket"
 gcs_bucket = GcsBucket(
-    bucket=bucket_name,
+    bucket=job_bucket_name,
     gcp_credentials=gcp_credentials,
 )
-gcs_bucket.save("world-movies-test-bucket", overwrite=True)
+gcs_bucket.save("world-movies-job-bucket", overwrite=True)
 
 # bucket_name = "raw_movie_data_world-movies-analytics"
 

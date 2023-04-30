@@ -88,6 +88,8 @@ LOCAL
     terraform apply
 
 12. Setup prefect blocks for deploymen
+    export IMAGE_DBT=$(terraform output image_python_dbt)
+    export IMAGE_MAIN=$(terraform output image_python_prefect)
     cd ../extract-inject-prefect-docker/
     python3 setup_prefect.py
 
