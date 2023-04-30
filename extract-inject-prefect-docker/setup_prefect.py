@@ -1,7 +1,7 @@
 import os
 from prefect_gcp import GcpCredentials, CloudRunJob, GcsBucket
 import json
-import subprocess
+
 
 with open(os.environ['GOOGLE_APPLICATION_CREDENTIALS']) as json_cred:
      service_account_info = json.load(json_cred)    
@@ -12,8 +12,6 @@ with open(os.environ['GOOGLE_APPLICATION_CREDENTIALS']) as json_cred:
          ).save("world-movies-analytics-cred", overwrite=True)
 
 gcp_credentials = GcpCredentials.load("world-movies-analytics-cred")
-subprocess.run(["export IMAGE_MAIN=$(terraform output -raw image_python_prefect)"], shell=True)
-subprocess.run(["export IMAGE_DBT=$(terraform output -raw image_python_dbt)"], shell=True)
 
 
 # must be from GCR and have Python + Prefect
