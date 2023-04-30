@@ -8,7 +8,7 @@ from prefect_gcp import CloudRunJob, GcsBucket
 
 client = get_client()
 
-gcs_block = GcsBucket.load("world-movies-test-bucket")
+gcs_block = GcsBucket.load("world-movies-job-bucket")
 cloud_run_main_block = CloudRunJob.load("world-movies-main-job")
 
 cloud_run_dbt_block = CloudRunJob.load("world-movies-dbt-job")

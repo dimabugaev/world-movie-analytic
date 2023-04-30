@@ -90,6 +90,7 @@ LOCAL
 12. Setup prefect blocks for deploymen
     export IMAGE_DBT=$(terraform output image_python_dbt)
     export IMAGE_MAIN=$(terraform output image_python_prefect)
+    export JOB_BUCKET_NAME=$(terraform output cloud_run_job_bucket)
     cd ../extract-inject-prefect-docker/
     python3 setup_prefect.py
 
