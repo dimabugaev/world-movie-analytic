@@ -20,7 +20,7 @@ def unzip_and_put_to_bq():
 
     df = pd.read_csv("movies.csv")
     df.to_gbq(destination_table='world_movie_dataset.movies',
-                project_id='world-movies-analytics',
+                project_id='world-movie-data-project',
                 chunksize=500000,
                 if_exists='replace',
                 credentials=gcp_credentials_block.get_credentials_from_service_account())
