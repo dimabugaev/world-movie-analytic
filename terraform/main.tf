@@ -80,13 +80,13 @@ resource "google_bigquery_dataset" "dataset" {
   location   = local.region
 }
 
-# #Create artifact repo for storage docker images
-# resource "google_artifact_registry_repository" "my-repo" {
-#   location      = local.region
-#   repository_id = "my-repository-${local.project}"
-#   description   = "Docker repository for perfect flows run"
-#   format        = "DOCKER"
-# }
+#Create artifact repo for storage docker images
+resource "google_artifact_registry_repository" "my-repo" {
+  location      = local.region
+  repository_id = "my-repository-${local.project}"
+  description   = "Docker repository for perfect flows run"
+  format        = "DOCKER"
+}
 
 #Build and push to gcloud repo docker image for Prefect agent in GKE and for python extract flow
 resource "null_resource" "docker_build" {
