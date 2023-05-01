@@ -28,4 +28,4 @@ COPY seeds /dbt/seeds
 
 # install dbt deps
 RUN dbt deps
-RUN dbt seed
+#RUN dbt seed
