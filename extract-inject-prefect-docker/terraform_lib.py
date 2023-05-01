@@ -2,7 +2,7 @@ import json
 import python_terraform as terraform
 
 # создаем объект Terraform
-tf = terraform.Terraform()
+tf = terraform.Terraform(working_dir='../terraform')
 
 # вызываем команду "output" в Terraform и сохраняем результат в переменную
 output = tf.output()
