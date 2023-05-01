@@ -81,7 +81,7 @@ LOCAL
     pip install python-terraform  
 
 9. Make kubernetes manifest for prefect agent
-    prefect kubernetes manifest agent -i prefecthq/prefect:2-python3.9 -q default > terraform/k8s.cfg
+    prefect kubernetes manifest agent -i eu.gcr.io/$TF_VAR_project_name/prefect-gcp:2-python3.9 -q default > terraform/k8s.cfg
 
 10. gcloud init
 

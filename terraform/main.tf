@@ -113,20 +113,20 @@ resource "null_resource" "docker_build" {
 #     }
 # }
 
-#Build kubernetes manifest
-resource "null_resource" "manifest_build" {
+# #Build kubernetes manifest
+# resource "null_resource" "manifest_build" {
 
-    triggers = {
-        always_run = timestamp()
+#     triggers = {
+#         always_run = timestamp()
 
-    }
+#     }
 
-    provisioner "local-exec" {
-        working_dir = "."
+#     provisioner "local-exec" {
+#         working_dir = "."
 
-        command     = "prefect kubernetes manifest agent -i ${local.gcr_addres}/${local.project}/${local.docker_image} -q default > k8s.cfg"
-    }
-}
+#         command     = "prefect kubernetes manifest agent -i ${local.gcr_addres}/${local.project}/${local.docker_image} -q default > k8s.cfg"
+#     }
+# }
 
 #Build and push to gcloud repo docker image for DBT run flow
 resource "null_resource" "docker_dbt_build" {
@@ -184,7 +184,7 @@ provider "kubectl" {
 resource "kubectl_manifest" "test" {
     yaml_body = file("./k8s.cfg")
 
-    depends_on = [null_resource.docker_build, null_resource.manifest_build]
+    depends_on = [null_resource.docker_build]
 }
 
 
