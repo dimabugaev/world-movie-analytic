@@ -15,9 +15,12 @@ def invoke_dbt():
 @task(log_prints=True)
 def print_result(res : dbtRunnerResult):
 
+    if res.result is not None:
     # inspect the results
-    for r in res.result:
-        print(f"{r.node.name}: {r.status}")
+        for r in res.result:
+            print(f"{r.node.name}: {r.status}")
+    else:
+        print(res.exception)
 
 
 @flow(log_prints=True)
