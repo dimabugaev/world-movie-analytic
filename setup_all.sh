@@ -51,7 +51,7 @@ LOCAL
     c. docker
     d. terraform
     e. prefect
-    f. dbt (last ver) 
+    f. dbt (min 1.5.0) 
 4. Create and activate venv 
     python3 -m venv wma-env
     source wma-env/bin/activate
@@ -77,7 +77,8 @@ LOCAL
 
 8. Install local lib prefect-gcp
     pip install prefect-gcp
-    pip install dbt-bigquery  
+    pip install dbt-bigquery
+    pip install python-terraform  
 
 9. Make kubernetes manifest for prefect agent
     prefect kubernetes manifest agent -i prefecthq/prefect:2-python3.9 -q default > terraform/k8s.cfg
