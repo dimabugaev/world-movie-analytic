@@ -30,7 +30,7 @@ def unzip_and_put_to_bq():
 
 @task(log_prints=True)
 def run_transform_dbt():
-    response = run_deployment(name="cloud_run_dbt_flow/DbtFlow")
+    response = run_deployment(name="cloud-run-dbt-flow/DbtFlow")
     print(response)
 
 @flow(log_prints=True)
