@@ -1,2 +1,2 @@
 dbt-bigquery
-"prefect-gcp[cloud_storage]"
+prefect-gcp
