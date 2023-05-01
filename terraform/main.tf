@@ -80,13 +80,13 @@ resource "google_bigquery_dataset" "dataset" {
   location   = local.region
 }
 
-#Create artifact repo for storage docker images
-resource "google_artifact_registry_repository" "my-repo" {
-  location      = local.region
-  repository_id = "my-repository-${local.project}"
-  description   = "Docker repository for perfect flows run"
-  format        = "DOCKER"
-}
+# #Create artifact repo for storage docker images
+# resource "google_artifact_registry_repository" "my-repo" {
+#   location      = local.region
+#   repository_id = "my-repository-${local.project}"
+#   description   = "Docker repository for perfect flows run"
+#   format        = "DOCKER"
+# }
 
 #Build and push to gcloud repo docker image for Prefect agent in GKE and for python extract flow
 resource "null_resource" "docker_build" {
@@ -100,7 +100,7 @@ resource "null_resource" "docker_build" {
         working_dir = "../extract-inject-prefect-docker/"
 
         #command     = "echo \"{\"username\":\"$KAGGLE_USERNAME\",\"key\":\"$KAGGLE_KEY\"}\" > kaggle.json && docker build -t ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image} . && docker login -u _json_key --password-stdin https://${local.gcr_addres} < $GOOGLE_APPLICATION_CREDENTIALS && docker push ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/${local.docker_image}"
-        command     = "echo \"{\"username\":\"$KAGGLE_USERNAME\",\"key\":\"$KAGGLE_KEY\"}\" > kaggle.json && docker build -t ${local.gcr_addres}/${local.project}/${local.docker_image} . && docker login -u _json_key --password-stdin https://${local.gcr_addres} < $GOOGLE_APPLICATION_CREDENTIALS && docker push ${local.gcr_addres}/${local.project}/${local.docker_image} && export IMAGE_MAIN=${local.gcr_addres}/${local.project}/${local.docker_image}"
+        command     = "echo \"{\"username\":\"$KAGGLE_USERNAME\",\"key\":\"$KAGGLE_KEY\"}\" > kaggle.json && docker build -t ${local.gcr_addres}/${local.project}/${local.docker_image} . && docker login -u _json_key --password-stdin https://${local.gcr_addres} < $GOOGLE_APPLICATION_CREDENTIALS && docker push ${local.gcr_addres}/${local.project}/${local.docker_image}"
     }
 }
 
@@ -112,6 +112,21 @@ resource "null_resource" "docker_build" {
 #         "before" = null_resource.docker_build.id
 #     }
 # }
+
+#Build kubernetes manifest
+resource "null_resource" "manifest_build" {
+
+    triggers = {
+        always_run = timestamp()
+
+    }
+
+    provisioner "local-exec" {
+        working_dir = "."
+
+        command     = "prefect kubernetes manifest agent -i ${local.gcr_addres}/${local.project}/${local.docker_image} -q default > k8s.cfg"
+    }
+}
 
 #Build and push to gcloud repo docker image for DBT run flow
 resource "null_resource" "docker_dbt_build" {
@@ -125,7 +140,7 @@ resource "null_resource" "docker_dbt_build" {
         working_dir = "../transform_dbt/"
 
         #command     = "cp $GOOGLE_APPLICATION_CREDENTIALS config/gcpkeyfile.json && docker build -t ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/dbt --build-arg P_GCP_BQ_DATASET=${local.bq_dataset_name} --build-arg P_GCP_REGION=${local.region} --build-arg P_GCP_PROJECT=${local.project} . && docker login -u _json_key --password-stdin https://${local.gcr_addres} < $GOOGLE_APPLICATION_CREDENTIALS && docker push ${local.gcr_addres}/${local.project}/${resource.google_artifact_registry_repository.my-repo.repository_id}/dbt && rm -rf config/gcpkeyfile.json"
-        command     = "cp $GOOGLE_APPLICATION_CREDENTIALS config/gcpkeyfile.json && docker build -t ${local.gcr_addres}/${local.project}/dbt --build-arg P_GCP_BQ_DATASET=${local.bq_dataset_name} --build-arg P_GCP_REGION=${local.region} --build-arg P_GCP_PROJECT=${local.project} . && docker login -u _json_key --password-stdin https://${local.gcr_addres} < $GOOGLE_APPLICATION_CREDENTIALS && docker push ${local.gcr_addres}/${local.project}/dbt && rm -rf config/gcpkeyfile.json && export IMAGE_DBT=${local.gcr_addres}/${local.project}/dbt"
+        command     = "cp $GOOGLE_APPLICATION_CREDENTIALS config/gcpkeyfile.json && docker build -t ${local.gcr_addres}/${local.project}/dbt --build-arg P_GCP_BQ_DATASET=${local.bq_dataset_name} --build-arg P_GCP_REGION=${local.region} --build-arg P_GCP_PROJECT=${local.project} . && docker login -u _json_key --password-stdin https://${local.gcr_addres} < $GOOGLE_APPLICATION_CREDENTIALS && docker push ${local.gcr_addres}/${local.project}/dbt && rm -rf config/gcpkeyfile.json"
     }
 }
 
@@ -169,7 +184,7 @@ provider "kubectl" {
 resource "kubectl_manifest" "test" {
     yaml_body = file("./k8s.cfg")
 
-    depends_on = [null_resource.docker_build]
+    depends_on = [null_resource.docker_build, null_resource.manifest_build]
 }
 
 

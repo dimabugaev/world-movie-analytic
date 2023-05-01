@@ -6,6 +6,9 @@ tf = terraform.Terraform(working_dir='../terraform')
 
 # вызываем команду "output" в Terraform и сохраняем результат в переменную
 output = tf.output()
+output['cloud_run_job_bucket']['value']
+output['image_python_prefect']['value']
+output['image_python_dbt']['value']
 print(output)
 # парсим JSON-строку в словарь Python
 #output_dict = json.loads(output)
