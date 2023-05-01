@@ -1,6 +1,7 @@
 import os
 from prefect_gcp import GcpCredentials, CloudRunJob, GcsBucket
 import json
+import python_terraform as terraform
 
 
 with open(os.environ['GOOGLE_APPLICATION_CREDENTIALS']) as json_cred:
@@ -14,10 +15,14 @@ with open(os.environ['GOOGLE_APPLICATION_CREDENTIALS']) as json_cred:
 gcp_credentials = GcpCredentials.load("world-movies-analytics-cred")
 
 
+
+tf = terraform.Terraform(working_dir='../terraform')
+output = tf.output()
+
 # must be from GCR and have Python + Prefect
-image_main = os.environ['IMAGE_MAIN']  
-image_dbt = os.environ['IMAGE_DBT']
-job_bucket_name = os.environ['JOB_BUCKET_NAME'] 
+image_main = output['image_python_prefect']['value'] 
+image_dbt = output['image_python_dbt']['value']
+job_bucket_name = output['cloud_run_job_bucket']['value']
 region = os.environ['TF_VAR_region']
 
 cloud_run_main = CloudRunJob(
