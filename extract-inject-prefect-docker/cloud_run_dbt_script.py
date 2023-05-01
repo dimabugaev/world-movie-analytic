@@ -6,7 +6,7 @@ def invoke_dbt():
     # initialize
     dbt = dbtRunner()
     # create CLI args as a list of strings
-    cli_args = ['run', '--project-dir', '/dbt']
+    cli_args = ['run', '--project-dir', '/dbt', '--profiles-dir', '/root/.dbt']
     # run the command
     res: dbtRunnerResult = dbt.invoke(cli_args)
 
