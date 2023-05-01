@@ -2,8 +2,8 @@ version: 2
 
 sources:
   - name: staging
-    database: world-movies-analytics
-    schema: world_movie_dataset
+    database: "{{ env_var('GCP_PROJECT') }}"
+    schema: "{{ env_var('GCP_BQ_DATASET') }}"
 
     tables:
       - name: movies

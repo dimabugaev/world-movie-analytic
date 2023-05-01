@@ -36,7 +36,7 @@ def print_result(res : dbtRunnerResult):
 
 @flow(log_prints=True)
 def cloud_run_dbt_flow():
-    res = invoke_dbt_seed()
-    print_result(res)
+    # res = invoke_dbt_seed()
+    # print_result(res)
     res = invoke_dbt_run()
     print_result(res)
