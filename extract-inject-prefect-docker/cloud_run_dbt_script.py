@@ -4,9 +4,9 @@ from dbt.cli.main import dbtRunner, dbtRunnerResult
 @task(log_prints=True)
 def invoke_dbt():
     # initialize
-    dbt = dbtRunner(project_dir='/dbt')
+    dbt = dbtRunner()
     # create CLI args as a list of strings
-    cli_args = ["run"]
+    cli_args = ['run', '--project', 'transform_dbt']
     # run the command
     res: dbtRunnerResult = dbt.invoke(cli_args)
 
